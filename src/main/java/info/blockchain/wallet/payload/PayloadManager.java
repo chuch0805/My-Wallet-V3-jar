@@ -155,6 +155,34 @@ public class PayloadManager {
     }
 
     /**
+     * NB! When called from Android - First apply PRNGFixes
+     * Creates a new Blockchain watch only wallet and saves it to the server.
+     * @param defaultAccountName
+     * @param email Used to send GUID link to user
+     * @return Seedhex. This needs to be stored in a secure location.
+     * @throws Exception
+     */
+    public String createWatchOnly(@Nonnull String defaultAccountName, @Nonnull String email, @Nonnull String password)
+        throws Exception {
+        log.info("Creating watch only wallet");
+
+        this.password = password;
+        walletBaseBody = new WalletBase();
+
+        Wallet wallet = new Wallet(defaultAccountName);
+
+        String seed = wallet.convertToWatchOnly(HD_WALLET_INDEX);
+
+        walletBaseBody.setWalletBody(wallet);
+
+        saveNewWallet(email);
+
+        updateAllBalances();
+
+        return seed;
+    }
+
+    /**
      * Creates a new Blockchain wallet based on provided mnemonic and saves it to the server.
      * @param mnemonic 12 word recovery phrase - space separated
      * @param defaultAccountName
@@ -179,6 +207,38 @@ public class PayloadManager {
         updateAllBalances();
 
         return walletBaseBody.getWalletBody();
+    }
+
+    /**
+     * Creates a new Blockchain wallet based on provided mnemonic and saves it to the server.
+     * @param mnemonic 12 word recovery phrase - space separated
+     * @param defaultAccountName
+     * @param email Used to send GUID link to user
+     * @return Seedhex. This needs to be stored in a secure location.
+     * @throws Exception
+     */
+    public String recoverWatchOnlyFromMnemonic(@Nonnull String mnemonic, @Nonnull String defaultAccountName,
+        @Nonnull String email, @Nonnull String password) throws Exception {
+        log.info("Recovering wallet");
+
+        this.password = password;
+        walletBaseBody = new WalletBase();
+
+        Wallet walletBody = new Wallet();
+        HDWallet hdWallet = HDWallet.recoverFromMnemonic(mnemonic, defaultAccountName);
+        walletBody.setHdWallets(Collections.singletonList(hdWallet));
+
+        walletBaseBody.setWalletBody(walletBody);
+
+        saveNewWallet(email);
+
+        updateAllBalances();
+
+        Wallet wallet =  walletBaseBody.getWalletBody();
+
+        String seed = wallet.convertToWatchOnly(HD_WALLET_INDEX);
+
+        return seed;
     }
 
     /**
@@ -313,7 +373,7 @@ public class PayloadManager {
         log.info("Checking if wallet is safe to save");
         if (walletBaseBody == null) {
             throw new HDWalletException("Save aborted - HDWallet not initialized.");
-        } else if (!walletBaseBody.getWalletBody().isEncryptionConsistent()) {
+        } else if (!walletBaseBody.getWalletBody().isWatchOnly() && !walletBaseBody.getWalletBody().isEncryptionConsistent()) {
             throw new HDWalletException("Save aborted - Payload corrupted. Key encryption not consistent.");
         } else if (BlockchainFramework.getDevice() == null) {
             throw new HDWalletException("Save aborted - Device name not specified in FrameWork.");

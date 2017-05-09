@@ -2,6 +2,7 @@ package info.blockchain.wallet.payload.data;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -201,6 +202,10 @@ public class Wallet {
 
     public boolean isUpgraded() {
         return (hdWallets != null && hdWallets.size() > 0);
+    }
+
+    public boolean isWatchOnly() {
+        return this.hdWallets.get(0).getSeedHex() == null;
     }
 
     public static Wallet fromJson(String json)
@@ -565,5 +570,9 @@ public class Wallet {
         }
 
         return address;
+    }
+
+    public String convertToWatchOnly(int hdWalletIndex) {
+        return getHdWallets().get(hdWalletIndex).convertToWatchOnly();
     }
 }

@@ -110,4 +110,58 @@ public class PayloadManagerIntegTest extends BaseIntegTest{
         payloadManager.getPayload().getHdWallets().get(0).getAccount(0).setLabel("Some Label");
         Assert.assertTrue(payloadManager.save());
     }
+
+    @Test
+    public void createWatchOnly() throws Exception {
+
+        PayloadManager.getInstance().createWatchOnly("My HDWallet", "name@email.com", "SomePassword");
+
+        Wallet walletBody = PayloadManager.getInstance()
+            .getPayload();
+
+        Assert.assertNull(walletBody.getHdWallets().get(0).getSeedHex());
+        Assert.assertNull(walletBody.getHdWallets().get(0).getAccounts().get(0).getXpriv());
+
+        Assert.assertEquals(36, walletBody.getGuid().length());//GUIDs are 36 in length
+        Assert.assertEquals("My HDWallet", walletBody.getHdWallets().get(0).getAccounts().get(0).getLabel());
+
+        Assert.assertEquals(1, walletBody.getHdWallets().get(0).getAccounts().size());
+
+        Assert.assertEquals(5000, walletBody.getOptions().getPbkdf2Iterations());
+        Assert.assertEquals(600000, walletBody.getOptions().getLogoutTime());
+        Assert.assertEquals(10000, walletBody.getOptions().getFeePerKb());
+    }
+
+    @Test
+    public void initializeAndDecryptWatchOnly() throws Exception {
+
+        String guid = "3de15a08-aa51-4980-b4fa-3dc6891dfae6";
+        String sharedKey = "ee5bd030-972b-463c-821a-107e4d4edb83";
+        String pw = "SomePassword";
+
+        PayloadManager payloadManager = PayloadManager.getInstance();
+        payloadManager.initializeAndDecrypt(sharedKey,guid,pw);
+
+        Assert.assertEquals(guid, payloadManager.getPayload().getGuid());
+        Assert.assertEquals(sharedKey, payloadManager.getPayload().getSharedKey());
+        Assert.assertEquals(pw, payloadManager.getTempPassword());
+
+        payloadManager.getPayload().getHdWallets().get(0).getAccount(0).setLabel("My HDWallet");
+        Assert.assertTrue(payloadManager.save());
+    }
+
+    @Test
+    public void recoverWatchOnlyFromMnemonic_2() throws Exception {
+
+        String mnemonic = "one defy stock very oven junk neutral weather sweet pyramid celery sorry";
+        String seedHex = "9aa737587979dcf2a53fc5dbb5e09467";
+
+        String seed = PayloadManager.getInstance().recoverWatchOnlyFromMnemonic(mnemonic, "My HDWallet", "name@email.com", "SomePassword");
+
+        Wallet walletBody = PayloadManager.getInstance()
+            .getPayload();
+
+        Assert.assertEquals(seedHex, seed);
+        Assert.assertNull(walletBody.getHdWallets().get(0).getSeedHex());
+    }
 }

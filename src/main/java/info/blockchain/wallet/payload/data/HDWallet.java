@@ -516,4 +516,14 @@ public class HDWallet {
 
         return null;
     }
+
+    public String convertToWatchOnly() {
+
+        String seed = seedHex;
+        setSeedHex(null);
+        for(Account account : getAccounts()) {
+            account.setXpriv(null);
+        }
+        return seed;
+    }
 }

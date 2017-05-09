@@ -62,6 +62,36 @@ public class PayloadManagerTest extends MockedResponseTest {
         Assert.assertEquals(10000, walletBody.getOptions().getFeePerKb());
     }
 
+    @Test
+    public void createWatchOnly() throws Exception {
+
+        LinkedList<String> responseList = new LinkedList<>();
+        responseList.add("MyWallet save successful.");
+        //Responses for multi address, 'All' and individual xpub
+        responseList.add("{}");//multiaddress responses - not testing this so can be empty.
+        responseList.add("{}");
+        responseList.add("{}");
+        mockInterceptor.setResponseStringList(responseList);
+
+        PayloadManager.getInstance()
+            .createWatchOnly("My HDWallet", "name@email.com", "SomePassword");
+
+        Wallet walletBody = PayloadManager.getInstance()
+            .getPayload();
+
+        Assert.assertNull(walletBody.getHdWallets().get(0).getSeedHex());
+        Assert.assertNull(walletBody.getHdWallets().get(0).getAccounts().get(0).getXpriv());
+
+        Assert.assertEquals(36, walletBody.getGuid().length());//GUIDs are 36 in length
+        Assert.assertEquals("My HDWallet", walletBody.getHdWallets().get(0).getAccounts().get(0).getLabel());
+
+        Assert.assertEquals(1, walletBody.getHdWallets().get(0).getAccounts().size());
+
+        Assert.assertEquals(5000, walletBody.getOptions().getPbkdf2Iterations());
+        Assert.assertEquals(600000, walletBody.getOptions().getLogoutTime());
+        Assert.assertEquals(10000, walletBody.getOptions().getFeePerKb());
+    }
+
     @Test(expected = ServerConnectionException.class)
     public void create_ServerConnectionException() throws Exception {
 

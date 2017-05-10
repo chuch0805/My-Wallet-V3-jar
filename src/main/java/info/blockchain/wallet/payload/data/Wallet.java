@@ -572,7 +572,7 @@ public class Wallet {
         return address;
     }
 
-    public String convertToWatchOnly(int hdWalletIndex) {
-        return getHdWallets().get(hdWalletIndex).convertToWatchOnly();
+    public String convertToWatchOnly() {
+        return hdWallets.get(0).convertToWatchOnly();
     }
 }

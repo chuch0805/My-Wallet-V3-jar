@@ -426,7 +426,7 @@ public class HDWalletTest extends MockedResponseTest {
         HDWallet hdWallet = HDWallet.fromJson(body);
 
         Assert.assertEquals("[car, region, outdoor, punch, poverty, shadow, insane, claim, one, whisper, learn, alert]",
-            hdWallet.getMnemonic().toString());
+            hdWallet.getMnemonic(null).toString());
     }
 
     @Test(expected = HDWalletException.class)
@@ -435,7 +435,7 @@ public class HDWalletTest extends MockedResponseTest {
         String body = new String(Files.readAllBytes(Paths.get(uri)), Charset.forName("utf-8"));
         HDWallet hdWallet = HDWallet.fromJson(body);
 
-        hdWallet.getMnemonic().toString();
+        hdWallet.getMnemonic(null).toString();
     }
 
     @Test

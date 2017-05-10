@@ -171,7 +171,7 @@ public class PayloadManager {
 
         Wallet wallet = new Wallet(defaultAccountName);
 
-        String seed = wallet.convertToWatchOnly(HD_WALLET_INDEX);
+        String seed = wallet.convertToWatchOnly();
 
         walletBaseBody.setWalletBody(wallet);
 
@@ -227,16 +227,13 @@ public class PayloadManager {
         Wallet walletBody = new Wallet();
         HDWallet hdWallet = HDWallet.recoverFromMnemonic(mnemonic, defaultAccountName);
         walletBody.setHdWallets(Collections.singletonList(hdWallet));
+        String seed = walletBody.convertToWatchOnly();
 
         walletBaseBody.setWalletBody(walletBody);
 
         saveNewWallet(email);
 
         updateAllBalances();
-
-        Wallet wallet =  walletBaseBody.getWalletBody();
-
-        String seed = wallet.convertToWatchOnly(HD_WALLET_INDEX);
 
         return seed;
     }
@@ -506,12 +503,18 @@ public class PayloadManager {
      * Reverts on save failure.
      * @param label
      * @param secondPassword
+     * @param seedHex Compulsory for watch-only wallets
      * @return
      * @throws Exception
      */
-    public Account addAccount(String label, @Nullable String secondPassword)
+    public Account addAccount(String label, @Nullable String secondPassword, @Nullable String seedHex)
         throws Exception {
         log.info("Adding account");
+
+        if(getPayload().isWatchOnly()) {
+            getPayload().getHdWallets().get(0).instantiateBip44WalletFromSeed(seedHex);
+        }
+
         Account accountBody = walletBaseBody.getWalletBody().addAccount(HD_WALLET_INDEX, label, secondPassword);
 
         boolean success = save();

@@ -1,6 +1,7 @@
 package info.blockchain.wallet.bip44;
 
 import com.google.common.base.Joiner;
+import info.blockchain.wallet.exceptions.HDWalletException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.codec.binary.Hex;
@@ -137,7 +138,12 @@ public class HDWallet {
     /**
      * Add new account.
      */
-    public HDAccount addAccount() {
+    public HDAccount addAccount() throws HDWalletException {
+
+        if(dkRoot == null) {
+            throw new HDWalletException("Watch only wallet seed required to derive new account");
+        }
+
         HDAccount account = new HDAccount(params, dkRoot, accounts.size());
         accounts.add(account);
 

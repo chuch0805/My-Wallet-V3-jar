@@ -271,7 +271,7 @@ public class PayloadManagerTest extends MockedResponseTest {
         responseList.add("{}");
         responseList.add("{}");
         mockInterceptor.setResponseStringList(responseList);
-        PayloadManager.getInstance().addAccount("Some Label", null);
+        PayloadManager.getInstance().addAccount("Some Label", null, null);
         Assert.assertEquals(2, PayloadManager.getInstance().getPayload().getHdWallets().get(0).getAccounts().size());
 
         responseList = new LinkedList<>();
@@ -282,7 +282,7 @@ public class PayloadManagerTest extends MockedResponseTest {
         responseList.add("{}");
         responseList.add("{}");
         mockInterceptor.setResponseStringList(responseList);
-        PayloadManager.getInstance().addAccount("Some Label", null);
+        PayloadManager.getInstance().addAccount("Some Label", null, null);
         Assert.assertEquals(3, PayloadManager.getInstance().getPayload().getHdWallets().get(0).getAccounts().size());
 
     }

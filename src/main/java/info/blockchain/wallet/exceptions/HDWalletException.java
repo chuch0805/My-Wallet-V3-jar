@@ -13,4 +13,8 @@ public class HDWalletException extends Exception {
     public HDWalletException(Throwable cause) {
         super(cause);
     }
+
+    public HDWalletException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

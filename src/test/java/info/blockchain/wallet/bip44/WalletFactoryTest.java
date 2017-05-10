@@ -1,6 +1,7 @@
 package info.blockchain.wallet.bip44;
 
 import info.blockchain.wallet.bip44.HDWalletFactory.Language;
+import info.blockchain.wallet.exceptions.HDWalletException;
 import java.io.IOException;
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.crypto.MnemonicException;
@@ -27,7 +28,7 @@ public class WalletFactoryTest {
     }
 
     @Test
-    public void testRestoreWallet_mnemonic() {
+    public void testRestoreWallet_mnemonic() throws HDWalletException {
 
         String mnemonic = "all all all all all all all all all all all all";
         String passphrase = "myPassPhrase";

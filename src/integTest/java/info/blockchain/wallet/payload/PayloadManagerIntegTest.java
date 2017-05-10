@@ -54,7 +54,7 @@ public class PayloadManagerIntegTest extends BaseIntegTest{
 
         //Check that mnemonic exists
         try {
-            Assert.assertEquals(walletBody.getHdWallets().get(0).getMnemonic().size(), 12);
+            Assert.assertEquals(walletBody.getHdWallets().get(0).getMnemonic(null).size(), 12);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail("upgradeV2PayloadToV3 failed");
@@ -163,5 +163,8 @@ public class PayloadManagerIntegTest extends BaseIntegTest{
 
         Assert.assertEquals(seedHex, seed);
         Assert.assertNull(walletBody.getHdWallets().get(0).getSeedHex());
+
+//        PayloadManager.getInstance().addAccount("label", null, seed);
+        PayloadManager.getInstance().getPayload().getHdWallets().get(0).getMnemonic(seed);
     }
 }

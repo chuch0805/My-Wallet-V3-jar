@@ -402,7 +402,7 @@ public class WalletTest extends MockedResponseTest{
         Wallet wallet = Wallet.fromJson(body);
         wallet.decryptHDWallet(0, "hello");
         Assert.assertEquals("[car, region, outdoor, punch, poverty, shadow, insane, claim, one, whisper, learn, alert]",
-            wallet.getHdWallets().get(0).getMnemonic().toString());
+            wallet.getHdWallets().get(0).getMnemonic(null).toString());
     }
 
     @Test(expected = DecryptionException.class)
@@ -412,7 +412,7 @@ public class WalletTest extends MockedResponseTest{
 
         Wallet wallet = Wallet.fromJson(body);
         wallet.decryptHDWallet(0, "bogus");
-        wallet.getHdWallets().get(0).getMnemonic().toString();
+        wallet.getHdWallets().get(0).getMnemonic(null).toString();
     }
 
     @Test

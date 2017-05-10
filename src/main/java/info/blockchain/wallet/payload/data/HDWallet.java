@@ -121,6 +121,39 @@ public class HDWallet {
         }
     }
 
+    /**
+     * Instantiate bip44 Watch only
+     * @param seedHex
+     */
+    public void instantiateBip44WalletFromSeed(String seedHex)
+        throws DecoderException, MnemonicLengthException, MnemonicWordException, MnemonicChecksumException,
+        IOException, HDWalletException {
+
+        //Wallet is not watch-only, no need to continue
+        if(this.seedHex != null) {
+            return;
+        }
+
+        if(seedHex == null) {
+            throw new HDWalletException("Instantiating watch-only wallet: SeedHex is null");
+        }
+
+        try{
+            int walletSize = DEFAULT_NEW_WALLET_SIZE;
+            if(accounts != null) walletSize = accounts.size();
+            HD = HDWalletFactory
+                .restoreWallet(PersistentUrls.getInstance().getCurrentNetworkParams(), Language.US,
+                    seedHex, getPassphrase(), walletSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            HD = null;
+        }
+
+        if(HD == null) {
+            throw new HDWalletException("HD instantiation failed");
+        }
+    }
+
     private boolean isBip44AlreadyDecrypted() {
 
         return
@@ -498,8 +531,13 @@ public class HDWallet {
         return HD.getMasterKey();
     }
 
-    public List<String> getMnemonic() throws HDWalletException {
+    public List<String> getMnemonic(String seedHex) throws HDWalletException {
 
+        try {
+            instantiateBip44WalletFromSeed(seedHex);
+        } catch (Exception e) {
+            throw new HDWalletException("Instantiating watch-only wallet: SeedHex is null", e);
+        }
         validateHD();
         return HD.getMnemonic();
     }

@@ -315,7 +315,11 @@ public class HDWallet {
         Account accountBody = new Account();
         accountBody.setLabel(label);
         accountBody.setXpub(hdAccount.getXpub());
-        accountBody.setXpriv(hdAccount.getXPriv());
+
+        //Watch only wallet. Don't save key to payload
+        if(seedHex != null) {
+            accountBody.setXpriv(hdAccount.getXPriv());
+        }
 
         getAccounts().add(accountBody);
 

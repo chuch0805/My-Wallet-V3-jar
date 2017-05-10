@@ -164,7 +164,7 @@ public class PayloadManagerIntegTest extends BaseIntegTest{
         Assert.assertEquals(seedHex, seed);
         Assert.assertNull(walletBody.getHdWallets().get(0).getSeedHex());
 
-//        PayloadManager.getInstance().addAccount("label", null, seed);
-        PayloadManager.getInstance().getPayload().getHdWallets().get(0).getMnemonic(seed);
+        PayloadManager.getInstance().addAccount("label", null, seed);
+//        PayloadManager.getInstance().getPayload().getHdWallets().get(0).getMnemonic(seed);
     }
 }
